@@ -21,10 +21,8 @@ class Welcome extends CI_Controller {
 	{
 		$this->load->library('seostats/Social');
         //echo("Sreeni");
-		$this->social->dosocial();
-        $data['fb'] ='Srreee';
-            //$this->social->dosocial();
-        $this->load->view('welcome_message');
+        $data['fb'] = $this->social->dosocial();
+        $this->load->view('welcome_message',$data);
 	}
 }
 
