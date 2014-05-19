@@ -1,46 +1,35 @@
-<?php if (! defined('BASEPATH')) exit('No direct script access allowed');
-class seostats {
-    function __construct() {
-        $this->ci =& get_instance();
-    }
-    public static function dothis(){
-        die('Do this from parent Class');
-    }
-    /*
-    public static function sendRequest(){
-        die('Dead,....');
-    }
-    public static function sendRequest($url, $postData = false, $postJson = false)
-    {
-        $ua = sprintf('SEOstats %s https://github.com/eyecatchup/SEOstats',
-            \SEOstats\SEOstats::BUILD_NO);
+<?php
+if (!function_exists('curl_init')) {
+    throw new Exception('Facebook needs the CURL PHP extension.');
+}
+if (!function_exists('json_decode')) {
+    throw new Exception('Facebook needs the JSON PHP extension.');
+}
 
-        $ch = curl_init($url);
-        curl_setopt_array($ch, array(
-            CURLOPT_USERAGENT       => $ua,
-            CURLOPT_RETURNTRANSFER  => 1,
-            CURLOPT_CONNECTTIMEOUT  => 30,
-            CURLOPT_FOLLOWLOCATION  => 1,
-            CURLOPT_MAXREDIRS       => 2,
-            CURLOPT_SSL_VERIFYPEER  => 0,
-        ));
+/**
+ * Thrown when an API call returns an exception.
+ *
+ * @author Naitik Shah <naitik@facebook.com>
+ */
+class Seostats extends Exception
+{
+    protected $result;
+    public function __construct($result) {
+        $this->result = $result;
+        $code = isset($result['error_code']) ? $result['error_code'] : 0;
 
-        if (false !== $postData) {
-            if (false !== $postJson) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER,
-                    array('Content-type: application/json'));
-                $data = json_encode($postData);
-            } else {
-                $data = http_build_query($postData);
-            }
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        if (isset($result['error_description'])) {
+            // OAuth 2.0 Draft 10 style
+            $msg = $result['error_description'];
+        } else if (isset($result['error']) && is_array($result['error'])) {
+            // OAuth 2.0 Draft 00 style
+            $msg = $result['error']['message'];
+        } else if (isset($result['error_msg'])) {
+            // Rest server style
+            $msg = $result['error_msg'];
+        } else {
+            $msg = 'Unknown Error. Check getResult()';
         }
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return (200 == (int)$httpCode) ? $response : false;
-    }*/
+        parent::__construct($msg, $code);
+    }
 }

@@ -5,14 +5,16 @@
  * Date: 10/5/14
  * Time: 9:58 PM
  */
-include("Seostats.php");
-//load_class(seostats::flase);
-class social extends seostats {
-    private $CI;
-    public function __construct()
-    {
-        parent::__construct();
-        $this->CI =& get_instance();
+require_once "Seostats.php";
+
+/**
+ * Extends the BaseFacebook class with the intent of using
+ * PHP sessions to store user ids and access tokens.
+ */
+class Social extends Seostats
+{
+    public function __construct($config) {
+        parent::__construct($config);
     }
     public static function sendRequest($url, $postData = false, $postJson = false)
     {
@@ -45,6 +47,9 @@ class social extends seostats {
         return (200 == (int)$httpCode) ? $response : false;
     }
     public static function dosocial(){
-        return('In');
+        $url = "http://webenza.com";
+        $fb = sprintf('SELECT total_count, share_count, like_count, comment_count, commentsbox_count, click_count FROM link_stat WHERE url="%s"', $url);
+        $myFB = sendRequest($fb);
+        return $myFB;
     }
-} 
+}

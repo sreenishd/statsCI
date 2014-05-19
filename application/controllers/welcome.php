@@ -19,7 +19,8 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library('seostats/Social');
+        $data['config']=1;
+		$this->load->library('seostats/Social',$data);
         //echo("Sreeni");
         $data['fb'] = $this->social->dosocial();
         $this->load->view('welcome_message',$data);
